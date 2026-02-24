@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ILA PostgreSQL Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* ILA DESIGN SYSTEM — Landing Page v2 */
+    :root {
+      --ink:        #0f172a;
+      --ink-light:  #334155;
+      --ink-muted:  #64748b;
+      --surface:    #ffffff;
+      --surface-alt:#f8fafc;
+      --border:     #e2e8f0;
+      --border-light:#f1f5f9;
+      --teal-50:  #f0fdfa;
+      --teal-100: #ccfbf1;
+      --teal-200: #99f6e4;
+      --teal-500: #14b8a6;
+      --teal-600: #0d9488;
+      --teal-700: #0f766e;
+      --teal-800: #115e59;
+      --teal-900: #134e4a;
+      --blue-50:  #eff6ff;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --amber-50:  #fffbeb;
+      --amber-100: #fef3c7;
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --green-50:  #f0fdf4;
+      --green-100: #dcfce7;
+      --green-500: #22c55e;
+      --green-600: #16a34a;
+      --purple-50:  #faf5ff;
+      --purple-500: #a855f7;
+      --purple-600: #9333ea;
+      --red-50:   #fef2f2;
+      --red-500:  #ef4444;
+      --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--surface-alt);
+      line-height: 1.6;
+    }
+
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 2rem;
+    }
+    .top-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--teal-800); }
+    .nav-brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--teal-600), var(--teal-800)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; }
+    .nav-brand-text { font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--teal-900) 0%, #0c4a6e 100%);
+      color: white; padding: 4.5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 70%, rgba(20,184,166,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(59,130,246,0.1) 0%, transparent 50%); pointer-events: none; }
+    .hero-content { position: relative; z-index: 1; }
+    .hero h1 { font-family: var(--font-serif); font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 400; line-height: 1.15; margin-bottom: 0.75rem; }
+    .hero p { font-size: 1.1rem; opacity: 0.85; max-width: 580px; margin: 0 auto; line-height: 1.6; }
+    .hero-badge { display: inline-block; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.25rem; }
+    .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.2; }
+    .hero-stat-label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .content { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-600); margin-bottom: 1rem; }
+
+    .progress-section { margin-bottom: 2.5rem; background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .progress-bar-bg { width: 100%; height: 10px; background: var(--border-light); border-radius: 5px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal-500), var(--blue-500)); border-radius: 5px; transition: width 0.6s var(--ease); }
+    .progress-text { font-size: 13px; color: var(--ink-muted); margin-top: 0.5rem; }
+    .progress-percent { font-size: 1.5rem; font-weight: 800; color: var(--teal-700); }
+
+    .chapter-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .chapter-card { display: flex; align-items: center; gap: 1.25rem; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; text-decoration: none; color: inherit; transition: all 0.2s var(--ease); }
+    .chapter-card:hover { border-color: var(--teal-500); box-shadow: 0 4px 16px rgba(20, 184, 166, 0.12); transform: translateY(-2px); }
+    .chapter-number { width: 46px; height: 46px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+    .chapter-number.ready { background: var(--teal-50); color: var(--teal-700); border: 1px solid var(--teal-200); }
+    .chapter-info { flex: 1; min-width: 0; }
+    .chapter-title { font-weight: 700; font-size: 15px; line-height: 1.3; margin-bottom: 2px; }
+    .chapter-meta { font-size: 13px; color: var(--ink-muted); }
+    .chapter-status { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .status-ready { background: var(--teal-50); color: var(--teal-700); border: 1px solid var(--teal-100); }
+
+    .phase-header { font-size: 11px; font-weight: 700; color: var(--ink-muted); letter-spacing: 0.06em; text-transform: uppercase; margin: 1.75rem 0 0.5rem; padding: 0.75rem 0 0; border-top: 1px solid var(--border-light); display: flex; align-items: center; gap: 8px; }
+    .phase-header:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    .phase-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .phase-dot.p1 { background: var(--teal-500); }
+    .phase-dot.p2 { background: var(--blue-500); }
+    .phase-dot.p3 { background: var(--amber-500); }
+    .phase-dot.p4 { background: var(--purple-500); }
+    .phase-dot.p5 { background: var(--red-500); }
+    .phase-dot.p6 { background: var(--green-500); }
+
+    .footer { text-align: center; padding: 2rem; font-size: 13px; color: var(--ink-muted); border-top: 1px solid var(--border); background: white; }
+    .footer a { color: var(--teal-700); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .content { padding: 2rem 1rem 3rem; }
+      .chapter-card { flex-wrap: wrap; gap: 0.75rem; padding: 1rem; }
+      .chapter-status { width: 100%; text-align: center; }
+      .progress-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a class="nav-brand" href="../index.html">
+        <div class="nav-brand-icon">ILA</div>
+        <span class="nav-brand-text">Iksha Learning Academy</span>
+      </a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Level 2 Certification</div>
+      <h1>PostgreSQL Engineering</h1>
+      <p>Production PostgreSQL mastery. Advanced query optimization, partitioning strategies, stored procedures, extensions, replication, and monitoring for high-traffic ad-tech systems.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">10</div>
+          <div class="hero-stat-label">Chapters</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">30</div>
+          <div class="hero-stat-label">Assignments</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">5</div>
+          <div class="hero-stat-label">Phases</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="progress-section">
+      <div class="progress-header">
+        <div class="section-label" style="margin-bottom: 0">Curriculum Progress</div>
+        <div class="progress-percent">0%</div>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: 0%"></div>
+      </div>
+      <p class="progress-text">0 of 10 chapters complete &middot; 10 ready to start</p>
+    </div>
+
+    <div class="section-label">All Chapters</div>
+    <div class="chapter-list">
+      <div class="phase-header"><span class="phase-dot p1"></span>Phase 1 &mdash; Advanced Query Engineering</div>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">01</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Advanced Query Optimization</div>
+          <div class="chapter-meta">Query planner internals, cost estimation, join algorithms, parallel queries, plan hints</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">02</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Advanced Data Types and Extensions</div>
+          <div class="chapter-meta">JSONB, arrays, hstore, btree_gin, full-text search, custom types, PostGIS</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <div class="phase-header"><span class="phase-dot p2"></span>Phase 2 &mdash; Data Architecture</div>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">03</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Table Partitioning</div>
+          <div class="chapter-meta">Range/list/hash partitioning, partition pruning, partition-wise joins, maintenance strategies</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">04</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Fact Tables and Analytics Schemas</div>
+          <div class="chapter-meta">Star schemas, fact tables, dimension tables, materialized view refresh, ETL patterns</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <div class="phase-header"><span class="phase-dot p3"></span>Phase 3 &mdash; Stored Procedures and Automation</div>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">05</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Advanced PL/pgSQL</div>
+          <div class="chapter-meta">Complex procedures, cursors, exception handling, dynamic SQL, bulk operations, ETL procedures</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">06</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Triggers and Event Systems</div>
+          <div class="chapter-meta">Advanced triggers, LISTEN/NOTIFY, event-driven workflows, audit logging, row-level security</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <div class="phase-header"><span class="phase-dot p4"></span>Phase 4 &mdash; High Availability</div>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">07</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Replication and Failover</div>
+          <div class="chapter-meta">Streaming replication, logical replication, pgBouncer, connection pooling, failover automation</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">08</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Backup and Disaster Recovery</div>
+          <div class="chapter-meta">pg_dump, pg_basebackup, WAL archiving, point-in-time recovery, backup verification</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <div class="phase-header"><span class="phase-dot p5"></span>Phase 5 &mdash; Production Operations</div>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">09</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Monitoring and Performance Tuning</div>
+          <div class="chapter-meta">pg_stat views, slow query analysis, vacuum tuning, memory configuration, bloat management</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+      <a class="chapter-card" href="#">
+        <div class="chapter-number ready">10</div>
+        <div class="chapter-info">
+          <div class="chapter-title">Security, Compliance, and Capstone</div>
+          <div class="chapter-meta">Role management, row-level security, SSL, audit logging, compliance, capstone defense</div>
+        </div>
+        <span class="chapter-status status-ready">Ready</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    ILA (Iksha Learning Academy) &middot; PostgreSQL Engineering &middot; Level 2
+  </footer>
+</body>
+</html>
