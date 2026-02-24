@@ -2,10 +2,496 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=chapters/index.html">
-  <title>ILA — Redirecting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ILA — Iksha Learning Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #0f172a;
+      --ink-light:  #334155;
+      --ink-muted:  #64748b;
+      --surface:    #ffffff;
+      --surface-alt:#f8fafc;
+      --border:     #e2e8f0;
+      --border-light:#f1f5f9;
+      --teal-50:  #f0fdfa;
+      --teal-100: #ccfbf1;
+      --teal-200: #99f6e4;
+      --teal-500: #14b8a6;
+      --teal-600: #0d9488;
+      --teal-700: #0f766e;
+      --teal-800: #115e59;
+      --teal-900: #134e4a;
+      --blue-50:  #eff6ff;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --amber-50:  #fffbeb;
+      --amber-100: #fef3c7;
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --green-50:  #f0fdf4;
+      --green-100: #dcfce7;
+      --green-500: #22c55e;
+      --green-600: #16a34a;
+      --purple-50:  #faf5ff;
+      --purple-500: #a855f7;
+      --purple-600: #9333ea;
+      --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--surface-alt);
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+
+    .top-nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--teal-800);
+    }
+
+    .nav-brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-800));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .nav-brand-text {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--teal-900) 0%, #0c4a6e 100%);
+      color: white;
+      padding: 5rem 2rem 4.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 70%, rgba(20,184,166,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(59,130,246,0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 5vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { text-align: center; }
+
+    .hero-stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .hero-stat-label {
+      font-size: 12px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Content */
+    .content {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 3rem 2rem 4rem;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-600);
+      margin-bottom: 1rem;
+    }
+
+    .section-label + .section-desc {
+      color: var(--ink-muted);
+      font-size: 14px;
+      margin-bottom: 1.5rem;
+      margin-top: -0.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+
+    /* Program Grid */
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .program-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s var(--ease);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .program-card:hover {
+      border-color: var(--teal-500);
+      box-shadow: 0 4px 16px rgba(20, 184, 166, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .program-card.coming-soon {
+      opacity: 0.75;
+    }
+
+    .program-card.coming-soon:hover {
+      border-color: var(--border);
+      box-shadow: none;
+      transform: none;
+      cursor: default;
+    }
+
+    .program-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .program-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .program-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .badge-live {
+      background: var(--green-50);
+      color: var(--green-600);
+    }
+
+    .badge-soon {
+      background: var(--amber-50);
+      color: var(--amber-500);
+    }
+
+    .program-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .program-card p {
+      font-size: 13.5px;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .program-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-light);
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .program-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .program-meta-value {
+      font-weight: 700;
+      color: var(--ink-light);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 13px;
+      color: var(--ink-muted);
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+
+    .footer a {
+      color: var(--teal-700);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .content { padding: 2rem 1rem 3rem; }
+      .program-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="chapters/index.html">ILA Curriculum</a>...</p>
+  <!-- Navigation -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a class="nav-brand" href="index.html">
+        <div class="nav-brand-icon">ILA</div>
+        <span class="nav-brand-text">Iksha Learning Academy</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Program Catalog</div>
+      <h1>Iksha Learning Academy</h1>
+      <p>Industry-ready certification programs in engineering, data, and professional skills. Built by practitioners, designed for real-world mastery.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">7</div>
+          <div class="hero-stat-label">Programs</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">2</div>
+          <div class="hero-stat-label">Categories</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">1</div>
+          <div class="hero-stat-label">Live Now</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- Technical Programs -->
+    <div class="category-section">
+      <div class="section-label">Technical Programs</div>
+      <p class="section-desc">Full-stack engineering, data, and AI certifications.</p>
+      <div class="program-grid">
+
+        <a class="program-card" href="programs/rails-and-react/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--teal-50); color: var(--teal-700);">&#9878;</div>
+            <span class="program-badge badge-live">Live</span>
+          </div>
+          <h3>Rails + React</h3>
+          <p>Full-stack engineering certification. Build production applications with Ruby on Rails APIs and React frontends. Two levels from foundational to advanced.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">2</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">10</span> Chapters</div>
+            <div class="program-meta-item"><span class="program-meta-value">30</span> Assignments</div>
+          </div>
+        </a>
+
+        <a class="program-card coming-soon" href="programs/ai-and-ml/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--purple-50); color: var(--purple-600);">&#9881;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>AI and Machine Learning</h3>
+          <p>Applied AI and ML engineering for production systems. Covers model training, deployment pipelines, and responsible AI practices.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+        <a class="program-card coming-soon" href="programs/python-and-fastapi/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--blue-50); color: var(--blue-600);">&#9883;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>Python and FastAPI</h3>
+          <p>Modern Python backend development with FastAPI. Build high-performance APIs, async services, and microservice architectures.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+        <a class="program-card coming-soon" href="programs/postgresql/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--blue-50); color: var(--blue-600);">&#9960;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>PostgreSQL</h3>
+          <p>Deep-dive into PostgreSQL internals, performance tuning, advanced query design, and production database operations.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+        <a class="program-card coming-soon" href="programs/redshift/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--amber-50); color: var(--amber-600);">&#9955;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>Redshift</h3>
+          <p>Data warehousing with Amazon Redshift. Schema design, query optimization, ETL patterns, and analytics at scale.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Professional Programs -->
+    <div class="category-section">
+      <div class="section-label">Professional Programs</div>
+      <p class="section-desc">Leadership, communication, and soft skills for engineering professionals.</p>
+      <div class="program-grid">
+
+        <a class="program-card coming-soon" href="programs/negotiations/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--green-50); color: var(--green-600);">&#9878;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>Negotiations</h3>
+          <p>Professional negotiation frameworks, tactics, and practice scenarios for engineering leaders and managers.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+        <a class="program-card coming-soon" href="programs/client-communication/index.html">
+          <div class="program-card-header">
+            <div class="program-icon" style="background: var(--purple-50); color: var(--purple-600);">&#9993;</div>
+            <span class="program-badge badge-soon">Coming Soon</span>
+          </div>
+          <h3>Client Communication</h3>
+          <p>Effective client communication, stakeholder management, and professional writing for engineering teams.</p>
+          <div class="program-meta">
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Levels</div>
+            <div class="program-meta-item"><span class="program-meta-value">&mdash;</span> Chapters</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    ILA (Iksha Learning Academy) &middot; 7 Programs &middot; Built by <a href="https://ikshalabs.com">Iksha Labs</a>
+  </footer>
 </body>
 </html>
