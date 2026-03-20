@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Communication Challenge — ILA Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* ILA DESIGN SYSTEM — Assessment v1 */
+    :root {
+      --ink:          #0f172a;
+      --ink-light:    #334155;
+      --ink-muted:    #64748b;
+      --surface:      #ffffff;
+      --surface-alt:  #f8fafc;
+      --border:       #e2e8f0;
+      --border-light: #f1f5f9;
+      --teal-50:   #f0fdfa;
+      --teal-100:  #ccfbf1;
+      --teal-200:  #99f6e4;
+      --teal-500:  #14b8a6;
+      --teal-600:  #0d9488;
+      --teal-700:  #0f766e;
+      --teal-800:  #115e59;
+      --teal-900:  #134e4a;
+      --blue-50:   #eff6ff;
+      --blue-500:  #3b82f6;
+      --blue-600:  #2563eb;
+      --amber-50:  #fffbeb;
+      --amber-100: #fef3c7;
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --green-50:  #f0fdf4;
+      --green-100: #dcfce7;
+      --green-500: #22c55e;
+      --green-600: #16a34a;
+      --green-700: #15803d;
+      --purple-50:  #faf5ff;
+      --purple-500: #a855f7;
+      --purple-600: #9333ea;
+      --red-50:    #fef2f2;
+      --red-100:   #fee2e2;
+      --red-500:   #ef4444;
+      --red-600:   #dc2626;
+      --red-700:   #b91c1c;
+      --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--surface-alt);
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+    .top-nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--teal-800);
+    }
+    .nav-brand-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-800));
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 14px;
+    }
+    .nav-brand-text { font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+    .nav-back {
+      font-size: 13px; font-weight: 500; color: var(--ink-muted);
+      text-decoration: none; display: flex; align-items: center; gap: 5px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--teal-700); }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(135deg, var(--teal-900) 0%, #0c4a6e 100%);
+      color: white; padding: 4rem 2rem 3.5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background:
+        radial-gradient(circle at 25% 75%, rgba(20,184,166,0.18) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, rgba(59,130,246,0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 400; line-height: 1.15; margin-bottom: 0.75rem;
+    }
+    .hero p { font-size: 1.05rem; opacity: 0.85; max-width: 560px; margin: 0 auto; line-height: 1.65; }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 2.5rem;
+      margin-top: 2rem; flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.2; }
+    .hero-stat-label { font-size: 11px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ─── SCORE TRACKER ─── */
+    .score-bar-wrap {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0.875rem 2rem; position: sticky; top: 56px; z-index: 90;
+    }
+    .score-bar-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; gap: 1.25rem;
+    }
+    .score-label { font-size: 13px; font-weight: 600; color: var(--ink-muted); white-space: nowrap; }
+    .score-pip-row { display: flex; gap: 6px; flex: 1; }
+    .score-pip {
+      width: 28px; height: 10px; border-radius: 5px;
+      background: var(--border); transition: background 0.4s var(--ease);
+      flex: 1;
+    }
+    .score-pip.correct { background: linear-gradient(90deg, var(--green-500), var(--teal-500)); }
+    .score-pip.wrong   { background: var(--red-500); }
+    .score-count {
+      font-size: 15px; font-weight: 800; color: var(--teal-700);
+      white-space: nowrap; font-variant-numeric: tabular-nums;
+      min-width: 42px; text-align: right;
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .content {
+      max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 4rem;
+    }
+    .section-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--teal-600); margin-bottom: 1rem;
+    }
+
+    /* ─── SCENARIO CARD ─── */
+    .scenario-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      margin-bottom: 1.5rem;
+      transition: box-shadow 0.3s var(--ease);
+    }
+    .scenario-card:hover { box-shadow: 0 4px 20px rgba(15, 23, 42, 0.07); }
+
+    .scenario-header {
+      padding: 1.5rem 1.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer; user-select: none;
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .scenario-chapter-badge {
+      flex-shrink: 0; width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; letter-spacing: -0.03em;
+    }
+    .scenario-header-text { flex: 1; min-width: 0; }
+    .scenario-chapter-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 3px;
+    }
+    .scenario-title {
+      font-size: 17px; font-weight: 700; line-height: 1.3; color: var(--ink);
+    }
+    .scenario-status-icon {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; margin-top: 4px;
+      transition: all 0.3s var(--ease);
+    }
+    .scenario-status-icon.unanswered { background: var(--border-light); color: var(--ink-muted); }
+    .scenario-status-icon.correct    { background: var(--green-100); color: var(--green-700); }
+    .scenario-status-icon.wrong      { background: var(--red-100); color: var(--red-700); }
+
+    .scenario-body { padding: 1.5rem 1.75rem; }
+
+    .scenario-context {
+      background: var(--surface-alt); border: 1px solid var(--border-light);
+      border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+    }
+    .scenario-character {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 0.875rem;
+    }
+    .character-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .character-name { font-weight: 700; font-size: 14px; color: var(--ink); }
+    .character-role { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+    .scenario-description { font-size: 15px; line-height: 1.7; color: var(--ink-light); }
+    .scenario-description strong { color: var(--ink); font-weight: 600; }
+    .scenario-question {
+      font-size: 16px; font-weight: 700; color: var(--ink);
+      margin-bottom: 1.25rem; line-height: 1.45;
+    }
+
+    /* ─── OPTIONS ─── */
+    .options-grid { display: flex; flex-direction: column; gap: 0.625rem; }
+
+    .option-btn {
+      display: flex; align-items: flex-start; gap: 0.875rem;
+      padding: 1rem 1.25rem;
+      border: 2px solid var(--border); border-radius: 10px;
+      background: white; cursor: pointer; text-align: left;
+      transition: all 0.2s var(--ease);
+      font-family: var(--font-sans);
+      width: 100%;
+    }
+    .option-btn:not(:disabled):hover {
+      border-color: var(--teal-500);
+      background: var(--teal-50);
+      transform: translateX(3px);
+    }
+    .option-btn:disabled { cursor: not-allowed; }
+
+    .option-letter {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 7px;
+      background: var(--surface-alt); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--ink-muted);
+      transition: all 0.2s var(--ease);
+      margin-top: 1px;
+    }
+    .option-text {
+      flex: 1; font-size: 14px; line-height: 1.55; color: var(--ink-light);
+    }
+
+    /* State: correct */
+    .option-btn.is-correct {
+      border-color: var(--green-500);
+      background: var(--green-50);
+      transform: none;
+    }
+    .option-btn.is-correct .option-letter {
+      background: var(--green-500); border-color: var(--green-500);
+      color: white;
+    }
+    .option-btn.is-correct .option-text { color: var(--green-700); font-weight: 500; }
+
+    /* State: wrong selection */
+    .option-btn.is-wrong-selected {
+      border-color: var(--red-500);
+      background: var(--red-50);
+    }
+    .option-btn.is-wrong-selected .option-letter {
+      background: var(--red-500); border-color: var(--red-500);
+      color: white;
+    }
+    .option-btn.is-wrong-selected .option-text { color: var(--red-700); }
+
+    /* State: dimmed (other options after answer) */
+    .option-btn.is-dimmed {
+      opacity: 0.45; border-color: var(--border-light);
+    }
+
+    /* ─── FEEDBACK PANEL ─── */
+    .feedback-panel {
+      margin-top: 1.25rem; border-radius: 10px;
+      padding: 1.125rem 1.375rem; display: none;
+      animation: slideDown 0.28s var(--ease) forwards;
+    }
+    .feedback-panel.visible { display: block; }
+    .feedback-panel.correct-panel {
+      background: var(--green-50); border: 1px solid var(--green-500);
+    }
+    .feedback-panel.wrong-panel {
+      background: var(--red-50); border: 1px solid var(--red-500);
+    }
+    .feedback-header {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .feedback-header.correct-label { color: var(--green-700); }
+    .feedback-header.wrong-label   { color: var(--red-700); }
+    .feedback-icon { font-size: 18px; }
+    .feedback-text { font-size: 14px; line-height: 1.65; color: var(--ink-light); }
+    .feedback-text strong { color: var(--ink); font-weight: 600; }
+    .correct-answer-hint {
+      margin-top: 0.625rem; padding-top: 0.625rem;
+      border-top: 1px solid var(--red-100);
+      font-size: 13px; color: var(--red-700); font-weight: 500;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESULTS SECTION ─── */
+    .results-section {
+      display: none; background: white; border: 1px solid var(--border);
+      border-radius: 20px; overflow: hidden; margin-top: 2rem;
+      animation: fadeUp 0.5s var(--ease) forwards;
+    }
+    .results-section.visible { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-hero {
+      background: linear-gradient(135deg, var(--teal-900) 0%, #0c4a6e 100%);
+      color: white; padding: 3rem 2rem 2.5rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .results-hero::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 60%, rgba(20,184,166,0.2) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .results-hero-content { position: relative; z-index: 1; }
+    .results-score-display {
+      font-size: clamp(3.5rem, 10vw, 5rem);
+      font-weight: 800; line-height: 1; margin-bottom: 0.25rem;
+    }
+    .results-score-display span { color: var(--teal-200); }
+    .results-rank {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 400; margin-bottom: 0.5rem;
+    }
+    .results-tagline { font-size: 14px; opacity: 0.8; max-width: 420px; margin: 0 auto; }
+
+    .results-body { padding: 2rem 2rem; }
+    .results-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .results-stat-card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem; text-align: center;
+    }
+    .results-stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.2; }
+    .results-stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+
+    .results-chapters-section { margin-bottom: 2rem; }
+    .results-chapters-section h3 {
+      font-size: 15px; font-weight: 700; margin-bottom: 1rem; color: var(--ink);
+    }
+    .chapter-result-row {
+      display: flex; align-items: center; gap: 0.875rem;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);
+    }
+    .chapter-result-row:last-child { border-bottom: none; }
+    .chapter-result-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+    .chapter-result-icon.pass { background: var(--green-100); }
+    .chapter-result-icon.fail { background: var(--red-100); }
+    .chapter-result-text { flex: 1; }
+    .chapter-result-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .chapter-result-sub { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+    .revisit-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 6px; background: var(--amber-100); color: var(--amber-600);
+      border: 1px solid var(--amber-500); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .results-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--teal-600); color: white;
+      border: none; border-radius: 10px; padding: 0.75rem 1.5rem;
+      font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.2s var(--ease);
+    }
+    .btn-primary:hover { background: var(--teal-700); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: white; color: var(--ink);
+      border: 2px solid var(--border); border-radius: 10px; padding: 0.75rem 1.5rem;
+      font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .btn-secondary:hover { border-color: var(--teal-500); color: var(--teal-700); }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      text-align: center; padding: 2rem; font-size: 13px;
+      color: var(--ink-muted); border-top: 1px solid var(--border); background: white;
+    }
+    .footer a { color: var(--teal-700); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ─── CHAPTER COLOUR THEMES ─── */
+    .ch-teal   { background: var(--teal-50);   color: var(--teal-700);   border: 1px solid var(--teal-200); }
+    .ch-blue   { background: var(--blue-50);   color: var(--blue-600);   border: 1px solid #bfdbfe; }
+    .ch-amber  { background: var(--amber-50);  color: var(--amber-600);  border: 1px solid var(--amber-100); }
+    .ch-purple { background: var(--purple-50); color: var(--purple-600); border: 1px solid #e9d5ff; }
+    .ch-green  { background: var(--green-50);  color: var(--green-600);  border: 1px solid var(--green-100); }
+    .ch-rose   { background: #fff1f2;          color: #e11d48;           border: 1px solid #fecdd3; }
+    .ch-indigo { background: #eef2ff;          color: #4338ca;           border: 1px solid #c7d2fe; }
+    .ch-orange { background: #fff7ed;          color: #ea580c;           border: 1px solid #fed7aa; }
+
+    .cl-teal   { color: var(--teal-700); }
+    .cl-blue   { color: var(--blue-600); }
+    .cl-amber  { color: var(--amber-600); }
+    .cl-purple { color: var(--purple-600); }
+    .cl-green  { color: var(--green-600); }
+    .cl-rose   { color: #e11d48; }
+    .cl-indigo { color: #4338ca; }
+    .cl-orange { color: #ea580c; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 3rem 1.25rem 2.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .content { padding: 1.5rem 1rem 3rem; }
+      .scenario-header { padding: 1.25rem 1.25rem 1rem; }
+      .scenario-body { padding: 1.25rem 1.25rem; }
+      .score-bar-wrap { padding: 0.75rem 1rem; }
+      .results-grid { grid-template-columns: repeat(2, 1fr); }
+      .results-body { padding: 1.5rem 1.25rem; }
+      .results-hero { padding: 2.5rem 1.25rem 2rem; }
+    }
+    @media (max-width: 400px) {
+      .score-pip { display: none; }
+      .score-bar-inner { justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a class="nav-brand" href="../index.html">
+        <div class="nav-brand-icon">ILA</div>
+        <span class="nav-brand-text">Iksha Learning Academy</span>
+      </a>
+      <a class="nav-back" href="index.html">
+        &#8592; Back to Course
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Client Communication &mdash; Level 1 Assessment</div>
+      <h1>The Communication Challenge</h1>
+      <p>Eight chaotic workplace scenarios. Eight chances to prove you actually read those chapters and didn't just skim the headings. No pressure.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">8</div>
+          <div class="hero-stat-label">Scenarios</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">1</div>
+          <div class="hero-stat-label">Right Answer Each</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">&#8734;</div>
+          <div class="hero-stat-label">Retries</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCORE BAR -->
+  <div class="score-bar-wrap" id="scoreBar">
+    <div class="score-bar-inner">
+      <span class="score-label">Progress</span>
+      <div class="score-pip-row" id="pipRow">
+        <div class="score-pip" id="pip-0"></div>
+        <div class="score-pip" id="pip-1"></div>
+        <div class="score-pip" id="pip-2"></div>
+        <div class="score-pip" id="pip-3"></div>
+        <div class="score-pip" id="pip-4"></div>
+        <div class="score-pip" id="pip-5"></div>
+        <div class="score-pip" id="pip-6"></div>
+        <div class="score-pip" id="pip-7"></div>
+      </div>
+      <span class="score-count" id="scoreCount">0 / 8</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+    <div class="section-label">8 Workplace Scenarios</div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 1 — Email Chaos (Chapter 1)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-0">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-teal">01</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-teal">Chapter 1 &mdash; Professional Email Communication</div>
+          <div class="scenario-title">Email Chaos at 11pm</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-0">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#fef3c7;">&#128561;</div>
+            <div>
+              <div class="character-name">Priya Sharma &mdash; That's You</div>
+              <div class="character-role">Software Engineer at StackBlitz Labs</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            It's 11:08pm on a Tuesday. You're mid-episode of a show you'll pretend you weren't watching.
+            Your phone buzzes. Your PM, Ravi, has forwarded you an email from Marcus Webb, the client's CTO.
+            <strong>Marcus is furious.</strong> The subject line is: <em>"EXTREMELY DISAPPOINTED — Where is our feature?"</em>
+            The email is a wall of angry text. A promised integration feature is 4 days late with zero communication.
+            Ravi's forwarding message says: <em>"Can you handle this? I'm in Bali."</em> Of course he is.
+            <br><br>
+            You were the one who missed the deadline because a dependency silently broke. You need to respond.
+          </p>
+        </div>
+        <p class="scenario-question">What do you do?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(0, 'A')" data-q="0" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Reply immediately with a brief acknowledgement email: confirm you received his message, take responsibility without over-explaining, give a realistic ETA for the feature and a follow-up call, and CC Ravi. Keep it under 150 words.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(0, 'B')" data-q="0" data-opt="B">
+            <span class="option-text">Reply with a detailed 600-word technical explanation of exactly why the dependency broke, including error logs pasted inline, to show Marcus you understand the problem deeply.</span>
+            <span class="option-letter">B</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(0, 'C')" data-q="0" data-opt="C">
+            <span class="option-text">Wait until morning. Responding at 11pm sets a precedent and the email was Ravi's problem to begin with.</span>
+            <span class="option-letter">C</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(0, 'D')" data-q="0" data-opt="D">
+            <span class="option-text">Reply with "Hi Marcus, noted. Will fix ASAP." Short, professional, no drama.</span>
+            <span class="option-letter">D</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-0"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 2 — The Jargon Bomb (Chapter 2)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-1">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-blue">02</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-blue">Chapter 2 &mdash; Technical Writing for Non-Technical Audiences</div>
+          <div class="scenario-title">The Jargon Bomb</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-1">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#dbeafe;">&#129300;</div>
+            <div>
+              <div class="character-name">Alex Chen &mdash; That's You</div>
+              <div class="character-role">Backend Engineer at DataFlow Inc.</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            Your company is doing a database migration from a monolithic PostgreSQL setup to a
+            multi-region distributed architecture. The CEO, Sandra Kim, is presenting this to the board
+            next week and needs a one-paragraph summary she can actually say out loud.
+            <br><br>
+            Sandra emails you: <em>"Alex, explain this migration to me like I'm a smart person who just doesn't know what SQL is.
+            Actually, I googled SQL and now I think it's a type of sunscreen? Please help."</em>
+            <br><br>
+            You need to write that paragraph. Which version do you send?
+          </p>
+        </div>
+        <p class="scenario-question">Which paragraph do you send Sandra?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(1, 'A')" data-q="1" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">"We're migrating our PostgreSQL monolith to a horizontally-sharded, multi-region Aurora cluster with read replicas, which will reduce P99 latency from ~340ms to under 80ms and enable zero-downtime deploys via blue-green switchover."</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(1, 'B')" data-q="1" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">"We're upgrading our database — the system that stores all customer and product data. Right now everything lives in one place, which limits our speed. We're moving to a setup that spreads that data across multiple locations globally, so the app loads faster for users everywhere and can handle 10x more customers without slowing down."</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(1, 'C')" data-q="1" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">"Our database needs an upgrade. This is a technical project the engineering team is handling. Estimated completion: Q3. No action needed from you."</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(1, 'D')" data-q="1" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Schedule a 2-hour technical deep-dive with Sandra so she can learn enough SQL to understand the migration properly before the board meeting.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-1"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 3 — The Meeting That Never Ends (Chapter 3)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-2">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-amber">03</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-amber">Chapter 3 &mdash; Meeting Management</div>
+          <div class="scenario-title">The Meeting That Never Ends</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-2">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#fef9c3;">&#128565;</div>
+            <div>
+              <div class="character-name">Jamie Torres &mdash; That's You</div>
+              <div class="character-role">Lead Engineer at Momentum Startup</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            You're 90 minutes into what was supposed to be a 60-minute "quick sync" with the client.
+            There is no agenda. Three people are talking simultaneously. Derek from the client side
+            is re-explaining a problem that was solved 45 minutes ago. Your PM keeps saying
+            <em>"great point"</em> to literally everything anyone says. Nobody has written anything down.
+            Your next meeting starts in 25 minutes and three decisions still need to be made.
+          </p>
+        </div>
+        <p class="scenario-question">You have 25 minutes left. What's the single most important thing you do right now?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(2, 'A')" data-q="2" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Interrupt politely, state that you have 25 minutes remaining, name the three open decisions that need resolution today, timebox 8 minutes per decision, and offer to be the person writing down what's agreed so you have clear action items before the call ends.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(2, 'B')" data-q="2" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">Send a follow-up email after the call summarising everything discussed. The meeting will end eventually and then you can sort it out properly.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(2, 'C')" data-q="2" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Quietly drop off the call and let the PM handle it. You weren't supposed to be the facilitator anyway.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(2, 'D')" data-q="2" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Ask everyone to send their thoughts in Slack after the call so decisions can be made async. Real decisions can't be made in this chaos anyway.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-2"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 4 — Demo Disaster (Chapter 4)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-3">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-purple">04</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-purple">Chapter 4 &mdash; Presentations and Demos</div>
+          <div class="scenario-title">Demo Disaster</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-3">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#f3e8ff;">&#128549;</div>
+            <div>
+              <div class="character-name">Sam Okafor &mdash; That's You</div>
+              <div class="character-role">Senior Engineer at NexaCloud</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            This is the big one. You're demoing your platform's new AI feature to the client's VP of Engineering,
+            three senior devs, and — surprise — the CEO just joined. There are 12 people on the call.
+            You share your screen, click the demo button and...
+            <strong>the staging environment throws a 503 error.</strong> Loudly. In huge red text.
+            On everyone's screen. Thirty seconds into a 45-minute demo.
+            You can feel your soul leaving your body.
+          </p>
+        </div>
+        <p class="scenario-question">What's your move?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(3, 'A')" data-q="3" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Laugh it off confidently, say something like "Well, that's why we have backups" and switch to your pre-recorded demo video or screenshot walkthrough. Acknowledge the issue briefly, keep energy high, and continue the narrative. Offer a live re-demo once the environment is restored.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(3, 'B')" data-q="3" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">Apologise profusely for several minutes, then spend the rest of the time trying to debug the staging server live on the call to show how technically capable you are at fixing things under pressure.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(3, 'C')" data-q="3" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Blame it on an infrastructure issue outside your control and immediately reschedule the call for next week once the environment is fixed.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(3, 'D')" data-q="3" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Pause the call, say you need 15 minutes to fix the environment, and ask everyone to go on mute while you frantically restart services.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-3"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 5 — Feedback Sandwich Gone Wrong (Chapter 5)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-4">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-rose">05</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-rose">Chapter 5 &mdash; Giving and Receiving Feedback</div>
+          <div class="scenario-title">The Feedback Sandwich Gone Wrong</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-4">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#ffe4e6;">&#129323;</div>
+            <div>
+              <div class="character-name">Morgan Lee &mdash; That's You</div>
+              <div class="character-role">Tech Lead at ByteForge</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            Ananya is a junior developer on your team — three months in, eager, genuinely talented.
+            Yesterday she pushed a hotfix directly to production without a PR review. At 4am, the fix
+            triggered a cascade failure that took the billing system offline for 6 hours, costing
+            roughly $40,000 in lost transactions. She's in the 1:1 room with you, clearly terrified.
+            <br><br>
+            She knows something went wrong. She's been Googling "how bad does it have to be to get fired"
+            since 6am. How do you structure this conversation?
+          </p>
+        </div>
+        <p class="scenario-question">Which approach is correct?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(4, 'A')" data-q="4" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Use the SBI model: describe the specific Situation (the hotfix push), the Behaviour you observed (bypassing PR review), and the Impact (6-hour outage, $40k loss). Then ask what happened from her side. Close by collaborating on a concrete fix — a checklist, a team agreement on hotfix protocol — so it doesn't happen again.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(4, 'B')" data-q="4" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">Open with three compliments ("You're doing great, your code quality is excellent, the team loves you") then mention the incident briefly, then close with more praise. Classic sandwich — keeps morale up.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(4, 'C')" data-q="4" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Explain that this is completely unacceptable, that it cannot happen again, and document the conversation formally so it's on record. Make clear the severity so she takes this seriously.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(4, 'D')" data-q="4" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Don't address it directly — just update the deployment policy for the whole team in a Slack message so she understands without having an awkward conversation.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-4"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 6 — The Silent Client (Chapter 6)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-5">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-green">06</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-green">Chapter 6 &mdash; Building Client Relationships</div>
+          <div class="scenario-title">The Silent Client</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-5">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#dcfce7;">&#129320;</div>
+            <div>
+              <div class="character-name">Jordan Kim &mdash; That's You</div>
+              <div class="character-role">Account Manager at Prism Digital</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            GlobalRetail Corp is your biggest client — 35% of your revenue. For the past two weeks,
+            <strong>complete radio silence.</strong> Three emails sent. Zero replies.
+            The project is in a critical feedback phase and work is stalling. Last time you spoke,
+            everything seemed fine — they even said they were "really happy" with progress.
+            Your CEO is asking for a status update. You have no status to give.
+          </p>
+        </div>
+        <p class="scenario-question">What's the right move?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(5, 'A')" data-q="5" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Send a fourth email, but this time make it low-pressure and give them an easy out: acknowledge you know they're busy, summarise the two specific things you need input on, give a concrete decision deadline, and offer a 15-minute call as an alternative. Keep it to 5 lines.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(5, 'B')" data-q="5" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">Escalate to their CEO directly. If your main contact is ghosting you, go over their head — you can't let the project stall because someone is bad at email.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(5, 'C')" data-q="5" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Continue working based on your best assumptions about what they want. Clients get busy — they'll come back and you'll have more to show them.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(5, 'D')" data-q="5" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Send a short message saying the project is now on hold until you hear back, and bill for the waiting time. They need to understand that their silence has consequences.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-5"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 7 — The Knowledge Black Hole (Chapter 7)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-6">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-indigo">07</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-indigo">Chapter 7 &mdash; Documentation Culture</div>
+          <div class="scenario-title">The Knowledge Black Hole</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-6">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#e0e7ff;">&#128557;</div>
+            <div>
+              <div class="character-name">Taylor Nguyen &mdash; That's You</div>
+              <div class="character-role">Engineering Manager at Finova</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            Raj Kumar was your billing systems engineer — 4 years, knew every quirk, every edge case,
+            every cursed workaround. He handed in his notice on Friday, last day is Tuesday.
+            <strong>There is no documentation.</strong> There has never been documentation.
+            When you asked Raj to write things down over the years, he always said
+            <em>"it's all in my head, I'll do it eventually."</em> He did not do it eventually.
+            <br><br>
+            A client invoice run happens every Monday at 9am. It's Saturday afternoon.
+          </p>
+        </div>
+        <p class="scenario-question">What should your immediate and longer-term response be?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(6, 'A')" data-q="6" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Immediately schedule a 3-hour knowledge extraction session with Raj before Tuesday — have him narrate every step of the billing process while someone turns it into a runbook in real-time. Separately, propose a team-wide documentation policy so this never happens again.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(6, 'B')" data-q="6" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">Ask Raj to write a comprehensive doc before he leaves — give him Monday to do it. He knows the system best, so the documentation should come from him with minimal interruption from your end.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(6, 'C')" data-q="6" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Monitor Monday's invoice run carefully. If something breaks, reverse-engineer the system from the codebase and build docs from that. You'll learn it faster by doing.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(6, 'D')" data-q="6" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Postpone the Monday invoice run to give the team time to figure out the system. Client billing can wait a few days while you get things in order.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-6"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCENARIO 8 — The Communication Audit (Chapter 8)
+    ════════════════════════════════════════════ -->
+    <div class="scenario-card" id="card-7">
+      <div class="scenario-header">
+        <div class="scenario-chapter-badge ch-orange">08</div>
+        <div class="scenario-header-text">
+          <div class="scenario-chapter-label cl-orange">Chapter 8 &mdash; Communication Audit and Capstone</div>
+          <div class="scenario-title">The Communication Audit</div>
+        </div>
+        <div class="scenario-status-icon unanswered" id="status-7">&#8212;</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-context">
+          <div class="scenario-character">
+            <div class="character-avatar" style="background:#ffedd5;">&#128200;</div>
+            <div>
+              <div class="character-name">Riley Patel &mdash; That's You</div>
+              <div class="character-role">Tech Lead at Orbit Solutions</div>
+            </div>
+          </div>
+          <p class="scenario-description">
+            Your team's NPS score from clients dropped from 72 to 52 this quarter. That's a 20-point
+            nosedive. Your manager, Dana, calls you in: <em>"Something went wrong with how we're communicating
+            with clients. I need you to figure out what it is and build a plan to fix it. You have two weeks."</em>
+            <br><br>
+            You remember that the quarter included a rebrand, two team members going on leave, and a
+            product pivot that changed half the feature roadmap. But you don't actually know which of
+            these, if any, caused the drop.
+          </p>
+        </div>
+        <p class="scenario-question">What's the right first step in your audit?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectAnswer(7, 'A')" data-q="7" data-opt="A">
+            <span class="option-letter">A</span>
+            <span class="option-text">Start with data: read all client feedback from the quarter, review email response times, count missed check-ins, and look for patterns. Then run short interviews with 3–4 clients to validate your hypothesis. Only build the improvement plan once you have evidence, not assumptions.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(7, 'B')" data-q="7" data-opt="B">
+            <span class="option-letter">B</span>
+            <span class="option-text">The rebrand and product pivot clearly caused confusion — address those first. Update all client-facing materials to reflect the new direction and send a clarification email to every client this week.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(7, 'C')" data-q="7" data-opt="C">
+            <span class="option-letter">C</span>
+            <span class="option-text">Ask the whole team to write a self-assessment of their client communication habits this quarter. Aggregate the results and build a training programme based on the weakest areas.</span>
+          </button>
+          <button class="option-btn" onclick="selectAnswer(7, 'D')" data-q="7" data-opt="D">
+            <span class="option-letter">D</span>
+            <span class="option-text">Implement a new weekly client update email template immediately — the drop is probably because clients feel uninformed. More communication = higher NPS, always.</span>
+          </button>
+        </div>
+        <div class="feedback-panel" id="feedback-7"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         RESULTS SECTION
+    ════════════════════════════════════════════ -->
+    <div class="results-section" id="resultsSection">
+      <div class="results-hero">
+        <div class="results-hero-content">
+          <div class="results-score-display" id="resultsScoreDisplay">0<span>/8</span></div>
+          <div class="results-rank" id="resultsRank">Loading&hellip;</div>
+          <p class="results-tagline" id="resultsTagline"></p>
+        </div>
+      </div>
+      <div class="results-body">
+        <div class="results-grid">
+          <div class="results-stat-card">
+            <div class="results-stat-value" id="statCorrect" style="color:var(--green-600)">0</div>
+            <div class="results-stat-label">Correct</div>
+          </div>
+          <div class="results-stat-card">
+            <div class="results-stat-value" id="statWrong" style="color:var(--red-600)">0</div>
+            <div class="results-stat-label">Incorrect</div>
+          </div>
+          <div class="results-stat-card">
+            <div class="results-stat-value" id="statPct" style="color:var(--teal-700)">0%</div>
+            <div class="results-stat-label">Score</div>
+          </div>
+          <div class="results-stat-card">
+            <div class="results-stat-value" id="statNeeded" style="color:var(--amber-600)">0</div>
+            <div class="results-stat-label">To Revisit</div>
+          </div>
+        </div>
+
+        <div class="results-chapters-section" id="resultsChapters"></div>
+
+        <div class="results-actions">
+          <button class="btn-primary" onclick="resetAssessment()">&#8635; Try Again</button>
+          <a class="btn-secondary" href="index.html">Back to Course</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <a href="index.html">Client Communication Foundations</a> &middot;
+    <a href="../index.html">ILA (Iksha Learning Academy)</a> &middot;
+    Level 1 Assessment
+  </footer>
+
+  <script>
+    // ═══════════════════════════════════════════
+    //  ASSESSMENT DATA
+    // ═══════════════════════════════════════════
+
+    const QUESTIONS = [
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 1: Professional Email Communication',
+        chapterUrl: 'chapter-01.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'Correct. This is exactly right.',
+            text: 'A brief, immediate acknowledgement shows professionalism and prevents the situation from getting worse overnight. You take ownership, give a realistic timeline, and loop in the appropriate people. Under 150 words respects Marcus\'s time. A follow-up call gives a chance to resolve it properly. This is the SOP for handling an angry client email.'
+          },
+          B: {
+            correct: false,
+            header: 'Too much, too technical.',
+            text: 'Pasting error logs into a client email is a classic mistake. Marcus is a CTO but he\'s emailing as a frustrated stakeholder, not a debugger. He doesn\'t need the technical root cause right now — he needs to know <strong>you have it handled</strong>. A wall of technical text at 11pm also signals panic, not competence.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Waiting is not a communication strategy.',
+            text: 'Every hour without a response escalates Marcus\'s anger. An unread angry email sitting overnight becomes a "they ignored me" story by morning. A brief acknowledgement now — even just confirming you\'ve received it and will respond first thing — keeps the situation from spiralling. Yes, Ravi dropped the ball by forwarding it. That doesn\'t mean you do nothing.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Too terse. Reads as dismissive.',
+            text: '"Noted. Will fix ASAP" acknowledges nothing specific, offers no timeline, takes no accountability, and doesn\'t tell Marcus when he can expect an actual resolution. After a 4-day missed deadline with zero communication, this response would likely increase his frustration rather than defuse it.',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'B',
+        chapter: 'Chapter 2: Technical Writing for Non-Technical Audiences',
+        chapterUrl: 'chapter-02.html',
+        explanations: {
+          A: {
+            correct: false,
+            header: 'You\'ve failed the brief.',
+            text: '"Horizontally-sharded Aurora cluster with read replicas" is not something Sandra can say to a board without sounding like she\'s reading someone else\'s homework. This paragraph uses 6 technical terms, no analogies, and has zero business framing. The chapter taught you to <strong>translate first, explain second</strong>.',
+            correctAnswer: 'B'
+          },
+          B: {
+            correct: true,
+            header: 'Yes. This is how you do it.',
+            text: 'This version replaces every technical term with a plain-English equivalent ("database" = "system that stores data"), uses a relatable business frame (speed, global users, growth capacity), and gives Sandra a concrete outcome she can own ("10x more customers"). No jargon. Clear business value. Boardroom-ready. This is what the executive summary section of Chapter 2 was about.'
+          },
+          C: {
+            correct: false,
+            header: 'Too thin and dismissive.',
+            text: '"No action needed from you" when Sandra is literally presenting to the board next week is spectacularly unhelpful. It also fails to answer her actual question — she wanted to understand what\'s happening and why it matters, not be told to stay in her lane. The chapter is about empowering non-technical stakeholders, not gatekeeping information.',
+            correctAnswer: 'B'
+          },
+          D: {
+            correct: false,
+            header: 'Wildly impractical.',
+            text: 'A 2-hour SQL tutorial three days before a board meeting is the opposite of helpful. Sandra asked for a paragraph, not a curriculum. When someone asks you to translate something, you translate it — you don\'t make them learn the original language.',
+            correctAnswer: 'B'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 3: Meeting Management',
+        chapterUrl: 'chapter-03.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'The exact right move.',
+            text: 'This applies every core skill from Chapter 3: interrupt constructively (not rudely), surface what still needs to happen, timebox the remaining work so it\'s achievable, and designate a note-taker so nothing falls through the cracks. Naming the three open decisions shifts the meeting from free-form venting to structured decision-making. You don\'t need to be the official facilitator to do this — anyone can do it, and good communicators do.'
+          },
+          B: {
+            correct: false,
+            header: 'Kicking the problem down the road.',
+            text: 'A follow-up email after a chaotic meeting without any agreed decisions is mostly a summary of confusion. You still need the three decisions made. A retrospective summary doesn\'t replace real-time resolution. The meeting will also "end eventually" at 3 hours at this rate, costing everyone their afternoon.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'That\'s not how teamwork works.',
+            text: 'Dropping off a client call silently is unprofessional and leaves your PM stranded. Chapter 3 specifically addresses how anyone — not just the designated facilitator — can rescue a derailing meeting. Ownership is a skill, not a job title.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Async can\'t replace a decision that needs a decision.',
+            text: 'Decisions that require alignment between multiple stakeholders rarely get made over Slack. They generate 47 messages and another meeting. The three decisions need resolution today. Deferring to async in the name of "it\'s too chaotic" just delays the chaos.',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 4: Presentations and Demos',
+        chapterUrl: 'chapter-04.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'Composure is the whole game.',
+            text: 'Chapter 4 explicitly covers backup plans and demo resilience. A crash-and-recover handled confidently often impresses clients <em>more</em> than a perfect demo — it shows how you behave under pressure. Laughing it off, moving to a backup, maintaining the narrative arc, and offering a live re-demo later is textbook. The cardinal rule: never let a technical failure become an emotional failure.'
+          },
+          B: {
+            correct: false,
+            header: 'Debugging live is not a demo strategy.',
+            text: 'Spending 30 minutes watching someone SSH into a server is not compelling to a VP of Engineering who has meetings. Extended apologies followed by live debugging transforms a 503 into a 503 and an awkward 45 minutes. Chapter 4 is clear: have a backup, use it, keep moving.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Blame + reschedule = bad impression.',
+            text: 'Blaming "infrastructure" without owning the situation signals poor preparation. Every experienced presenter has a backup plan precisely because environments fail. Rescheduling cold after a crash, without attempting anything, is the worst outcome — you\'ve wasted 12 people\'s time and given them nothing.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Asking 12 people to sit on mute while you panic is not great.',
+            text: 'Putting 12 people on hold for a backend restart is a fast way to lose the room. They\'ll check email, leave, or start side conversations. The moment a presenter says "hold on, let me fix this" — and means 15 minutes — the demo is over. Use your backup.',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 5: Giving and Receiving Feedback',
+        chapterUrl: 'chapter-05.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'The SBI model, done well.',
+            text: '<strong>Situation, Behaviour, Impact</strong> — this is exactly what Chapter 5 teaches. You\'re specific about what happened (not "you always" or "you\'re careless"), you describe behaviour not character, and you quantify the impact clearly. Then you invite her perspective — because she might have context you don\'t. Closing with a concrete process fix turns a punitive conversation into a growth one. This is Radical Candor: care personally, challenge directly.'
+          },
+          B: {
+            correct: false,
+            header: 'The feedback sandwich is a trap.',
+            text: 'Chapter 5 specifically warns against the feedback sandwich. When the real message (a $40k incident) is buried between compliments, people either don\'t register the severity, or they walk away remembering "my manager said I\'m doing great" and glossing over the middle. Ananya needs to understand the gravity of what happened — not feel confused about whether this was a bad meeting or a good one.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Formal documentation without context is punitive, not constructive.',
+            text: 'Leading with "this is completely unacceptable" and immediately going to formal documentation — especially for a 3-month junior dev on her first serious mistake — is more likely to produce paralysis or resignation than growth. The goal of feedback is behaviour change, not record-keeping. Chapter 5 makes clear: direct doesn\'t mean harsh.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Indirect feedback isn\'t feedback.',
+            text: 'Sending a team-wide policy update to avoid a direct conversation is conflict avoidance, not feedback. Ananya needs a real conversation — both because she deserves to understand what happened, and because vague policy emails don\'t produce the same learning as a thoughtful 1:1. The chapter is called "Giving Feedback", not "Sending Policy Memos".',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 6: Building Client Relationships',
+        chapterUrl: 'chapter-06.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'Correct. Low friction, high clarity.',
+            text: 'After three unanswered emails, the problem might be email itself — or your emails might be too complex to act on quickly. A short, low-pressure message that (1) validates they\'re busy, (2) narrows the ask to two specific items, (3) gives a decision deadline, and (4) offers a call alternative, is the most likely to get a response. Chapter 6 calls this "making it easy to say yes." You\'re removing friction, not adding pressure.'
+          },
+          B: {
+            correct: false,
+            header: 'Going over someone\'s head is a relationship-ender.',
+            text: 'Escalating to the CEO without exhausting other options will very likely anger your main contact and damage the relationship long-term. Chapter 6 is clear: escalation is a last resort with significant consequences. You haven\'t even tried a different communication channel (phone, calendar invite, LinkedIn message). Two weeks of silence isn\'t yet an emergency — it\'s a communication problem.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Working on assumptions is expensive.',
+            text: 'Continuing to build without client input in a feedback phase means you might deliver the wrong thing entirely. The silence might indicate the client has concerns they haven\'t voiced — which is a relationship and trust signal issue. Charging ahead and presenting a fait accompli can actually deepen the problem.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Billing for silence and threatening hold is aggressive.',
+            text: 'This response might be contractually defensible but is practically disastrous. Sending a "project on hold" message to your biggest client without a prior conversation is likely to create conflict, not resolve it. Chapter 6 is about building relationships and managing expectations — not issuing ultimatums. This tactic trades short-term leverage for long-term trust.',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 7: Documentation Culture',
+        chapterUrl: 'chapter-07.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'Structured extraction + systemic fix.',
+            text: 'Chapter 7 covers knowledge transfer sessions as a documentation method. A structured session where Raj narrates while someone else writes is far more effective than asking him to write alone — you capture <em>what he actually knows</em>, including the tacit knowledge he\'d forget to document himself. The Monday deadline makes this urgent. Proposing a team-wide policy closes the loop so you\'re not back here in two years with the next Raj.'
+          },
+          B: {
+            correct: false,
+            header: 'Asking Raj to write solo is too risky.',
+            text: 'Giving Raj a full day to write documentation alone will produce a doc that covers what he <em>thinks</em> needs to be documented — not necessarily the undocumented quirks and failure modes you actually need. People systematically underestimate what they know and overestimate what they write down. A collaborative extraction session with a skilled listener produces far better runbooks.',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Reverse-engineering billing at 9am Monday is a gamble.',
+            text: 'Waiting to see if something breaks, then learning from the wreckage, is not a documentation strategy — it\'s a crisis strategy. With a Monday invoice run and real money at stake, this is an unacceptable risk. Chapter 7 teaches proactive documentation exactly to avoid this kind of "let\'s just see what happens" situation.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: 'Delaying client billing is not an option.',
+            text: 'Postponing an invoice run without client approval is a significant breach of service. Whatever the internal situation, billing is a client commitment. The right response to "we don\'t understand our billing system" is not "let\'s skip billing Monday" — it\'s "we need to understand it by Sunday night."',
+            correctAnswer: 'A'
+          }
+        }
+      },
+      {
+        correctOption: 'A',
+        chapter: 'Chapter 8: Communication Audit and Capstone',
+        chapterUrl: 'chapter-08.html',
+        explanations: {
+          A: {
+            correct: true,
+            header: 'Evidence first, solutions second.',
+            text: 'Chapter 8\'s entire point is that a communication audit starts with <strong>data and diagnosis</strong>, not solutions. A 20-point NPS drop could have a dozen causes. Jumping to solutions before identifying root causes means you might fix the wrong thing. Reviewing actual communication artefacts (emails, response times, check-ins) combined with short client interviews gives you evidence. Only then do you build a targeted improvement plan. This is systematic, not reactive.'
+          },
+          B: {
+            correct: false,
+            header: 'You\'re guessing.',
+            text: 'The rebrand and product pivot might have caused the drop — or it might have been slow email response times, missed check-ins, or unclear status updates. Acting on an assumption without data means you could spend two weeks solving the wrong problem while the real issue persists. The audit process exists to distinguish between "I think I know why" and "I know why."',
+            correctAnswer: 'A'
+          },
+          C: {
+            correct: false,
+            header: 'Self-assessment is useful but insufficient on its own.',
+            text: 'Team self-assessments are valuable as one input in a communication audit, but they suffer from obvious bias — people are rarely accurate critics of their own communication. The NPS drop is a client-side signal, so the primary data source should be clients, not the team\'s own perception of how they\'re doing.',
+            correctAnswer: 'A'
+          },
+          D: {
+            correct: false,
+            header: '"More communication" is not always the answer.',
+            text: 'Implementing a new email template without knowing what caused the drop is the definition of solving a hypothesis rather than a problem. What if the issue was meeting quality, not email volume? Or tone of updates, not frequency? Throwing more comms at an undiagnosed problem can actually create noise fatigue and make satisfaction worse. Diagnose first.',
+            correctAnswer: 'A'
+          }
+        }
+      }
+    ];
+
+    const CHAPTER_NAMES = [
+      'Professional Email Communication',
+      'Technical Writing for Non-Technical Audiences',
+      'Meeting Management',
+      'Presentations and Demos',
+      'Giving and Receiving Feedback',
+      'Building Client Relationships',
+      'Documentation Culture',
+      'Communication Audit and Capstone'
+    ];
+
+    const RANK_TIERS = [
+      { min: 8, rank: 'Communication Ninja',  tagline: 'You didn\'t just read the chapters — you absorbed them. All 8 scenarios handled perfectly. Your future clients don\'t know how lucky they are.' },
+      { min: 7, rank: 'Almost There',          tagline: 'Seven out of eight is genuinely impressive. One scenario tripped you up, which means one chapter deserves a second read. You\'re well on your way.' },
+      { min: 6, rank: 'Getting There',         tagline: 'Solid foundations, a couple of gaps. Review the chapters you missed and you\'ll be in great shape. The knowledge is clearly there.' },
+      { min: 5, rank: 'Room to Grow',          tagline: 'Half the scenarios landed, half didn\'t. The good news: you can see exactly which areas need work. Revisit those chapters and try again.' },
+      { min: 3, rank: 'Back to Basics',        tagline: 'The scenarios got the better of you this time. That\'s what this assessment is for — identifying gaps before they show up in real client situations. Hit the chapters and come back.' },
+      { min: 0, rank: 'Starting Fresh',        tagline: 'No shame — every expert was once a beginner. The chapters cover everything you need. Read them, try the scenarios again, and watch the score change.' }
+    ];
+
+    // ═══════════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════════
+
+    let answers = new Array(8).fill(null); // null | { chosen, correct }
+
+    function answeredCount() {
+      return answers.filter(a => a !== null).length;
+    }
+
+    function correctCount() {
+      return answers.filter(a => a && a.correct).length;
+    }
+
+    // ═══════════════════════════════════════════
+    //  SELECTING AN ANSWER
+    // ═══════════════════════════════════════════
+
+    function selectAnswer(qIndex, chosen) {
+      if (answers[qIndex] !== null) return; // already answered
+
+      const question    = QUESTIONS[qIndex];
+      const isCorrect   = chosen === question.correctOption;
+      answers[qIndex]   = { chosen, correct: isCorrect };
+
+      // Disable all buttons for this question
+      const card     = document.getElementById('card-' + qIndex);
+      const buttons  = card.querySelectorAll('.option-btn');
+      buttons.forEach(btn => { btn.disabled = true; });
+
+      // Style the buttons
+      buttons.forEach(btn => {
+        const opt = btn.getAttribute('data-opt');
+        if (opt === question.correctOption) {
+          btn.classList.add('is-correct');
+        } else if (opt === chosen && !isCorrect) {
+          btn.classList.add('is-wrong-selected');
+        } else {
+          btn.classList.add('is-dimmed');
+        }
+      });
+
+      // Show feedback
+      const feedbackEl = document.getElementById('feedback-' + qIndex);
+      const exp        = question.explanations[chosen];
+      if (exp.correct) {
+        feedbackEl.className = 'feedback-panel correct-panel visible';
+        feedbackEl.innerHTML =
+          '<div class="feedback-header correct-label"><span class="feedback-icon">&#9989;</span>' + exp.header + '</div>' +
+          '<p class="feedback-text">' + exp.text + '</p>';
+      } else {
+        feedbackEl.className = 'feedback-panel wrong-panel visible';
+        feedbackEl.innerHTML =
+          '<div class="feedback-header wrong-label"><span class="feedback-icon">&#10060;</span>' + exp.header + '</div>' +
+          '<p class="feedback-text">' + exp.text + '</p>' +
+          '<div class="correct-answer-hint">The correct answer was <strong>' + exp.correctAnswer + '</strong>. See it highlighted above.</div>';
+      }
+
+      // Update status icon
+      const statusEl = document.getElementById('status-' + qIndex);
+      if (isCorrect) {
+        statusEl.className = 'scenario-status-icon correct';
+        statusEl.innerHTML = '&#10003;';
+      } else {
+        statusEl.className = 'scenario-status-icon wrong';
+        statusEl.innerHTML = '&#10005;';
+      }
+
+      // Update score bar
+      updateScoreBar(qIndex, isCorrect);
+
+      // Check if all answered
+      if (answeredCount() === 8) {
+        setTimeout(showResults, 700);
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  SCORE BAR
+    // ═══════════════════════════════════════════
+
+    function updateScoreBar(qIndex, isCorrect) {
+      const pip = document.getElementById('pip-' + qIndex);
+      pip.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      const correct = correctCount();
+      const answered = answeredCount();
+      document.getElementById('scoreCount').textContent = correct + ' / 8';
+    }
+
+    // ═══════════════════════════════════════════
+    //  RESULTS
+    // ═══════════════════════════════════════════
+
+    function showResults() {
+      const correct  = correctCount();
+      const wrong    = 8 - correct;
+      const pct      = Math.round((correct / 8) * 100);
+      const toRevisit = wrong;
+
+      // Rank
+      const tier = RANK_TIERS.find(t => correct >= t.min);
+
+      document.getElementById('resultsScoreDisplay').innerHTML = correct + '<span>/8</span>';
+      document.getElementById('resultsRank').textContent       = tier.rank;
+      document.getElementById('resultsTagline').textContent    = tier.tagline;
+      document.getElementById('statCorrect').textContent       = correct;
+      document.getElementById('statWrong').textContent         = wrong;
+      document.getElementById('statPct').textContent           = pct + '%';
+      document.getElementById('statNeeded').textContent        = toRevisit;
+
+      // Chapter list
+      const chaptersEl = document.getElementById('resultsChapters');
+      if (wrong > 0) {
+        let html = '<h3>Chapters to Revisit</h3>';
+        answers.forEach((ans, i) => {
+          const name   = CHAPTER_NAMES[i];
+          const url    = QUESTIONS[i].chapterUrl;
+          const passed = ans && ans.correct;
+          html += '<div class="chapter-result-row">';
+          html += '<div class="chapter-result-icon ' + (passed ? 'pass' : 'fail') + '">' + (passed ? '&#10003;' : '&#10005;') + '</div>';
+          html += '<div class="chapter-result-text">';
+          html += '<div class="chapter-result-name">Chapter ' + (i + 1) + ': ' + name + '</div>';
+          if (!passed) {
+            html += '<div class="chapter-result-sub"><a href="' + url + '" style="color:var(--teal-700);text-decoration:none;">Read chapter again &rarr;</a></div>';
+          } else {
+            html += '<div class="chapter-result-sub" style="color:var(--green-600);">Answered correctly</div>';
+          }
+          html += '</div>';
+          if (!passed) {
+            html += '<span class="revisit-badge">Revisit</span>';
+          }
+          html += '</div>';
+        });
+        chaptersEl.innerHTML = html;
+      } else {
+        chaptersEl.innerHTML = '<div style="background:var(--green-50);border:1px solid var(--green-500);border-radius:10px;padding:1.25rem 1.5rem;color:var(--green-700);font-weight:600;font-size:14px;">&#127881; Perfect score. Every chapter landed. You\'re ready to communicate like a pro.</div>';
+      }
+
+      const resultsEl = document.getElementById('resultsSection');
+      resultsEl.classList.add('visible');
+      setTimeout(() => {
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    // ═══════════════════════════════════════════
+    //  RESET
+    // ═══════════════════════════════════════════
+
+    function resetAssessment() {
+      answers = new Array(8).fill(null);
+
+      // Reset pips
+      for (let i = 0; i < 8; i++) {
+        const pip = document.getElementById('pip-' + i);
+        pip.className = 'score-pip';
+      }
+      document.getElementById('scoreCount').textContent = '0 / 8';
+
+      // Reset each card
+      for (let i = 0; i < 8; i++) {
+        const card    = document.getElementById('card-' + i);
+        const buttons = card.querySelectorAll('.option-btn');
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.className = 'option-btn';
+        });
+
+        const feedbackEl = document.getElementById('feedback-' + i);
+        feedbackEl.className = 'feedback-panel';
+        feedbackEl.innerHTML = '';
+
+        const statusEl = document.getElementById('status-' + i);
+        statusEl.className = 'scenario-status-icon unanswered';
+        statusEl.innerHTML = '&#8212;';
+      }
+
+      // Hide results
+      const resultsEl = document.getElementById('resultsSection');
+      resultsEl.classList.remove('visible');
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
